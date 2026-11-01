@@ -22,10 +22,15 @@ function PaymentsContent() {
     if (user) paymentService.getPayments(user).then(setPayments);
   }, [user]);
 
+  async function handleRefund(id: number) {
+    const updated = await paymentService.refundPayment(id);
+    setPayments(payments.map((p) => (p.id === id ? updated : p)));
+  }
+
   return (
     <div>
       <h1>Платежи</h1>
-      <PaymentsTable payments={payments} />
+      <PaymentsTable payments={payments} onRefund={handleRefund} />
     </div>
   );
 }

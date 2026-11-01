@@ -11,3 +11,7 @@ export function createPayment(user: SessionUser, data: PaymentFormData) {
     body: JSON.stringify({ ...data, userId: user.id }),
   });
 }
+
+export function refundPayment(id: number) {
+  return request<Payment>(`/api/payments/${id}/refund`, { method: "POST" });
+}

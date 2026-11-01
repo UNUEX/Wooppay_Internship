@@ -2,9 +2,10 @@ import { Payment } from "@/types";
 
 type Props = {
   payments: Payment[];
+  onRefund?: (id: number) => void;
 };
 
-export default function PaymentsTable({ payments }: Props) {
+export default function PaymentsTable({ payments, onRefund }: Props) {
   return (
     <table>
       <thead>
@@ -15,6 +16,7 @@ export default function PaymentsTable({ payments }: Props) {
           <th>Сумма</th>
           <th>Статус</th>
           <th>Дата</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +28,11 @@ export default function PaymentsTable({ payments }: Props) {
             <td>{p.amount} ₸</td>
             <td>{p.status === "paid" ? "Оплачен" : "Возвращён"}</td>
             <td>{new Date(p.createdAt).toLocaleDateString("ru-RU")}</td>
+            <td>
+              {p.status === "paid" && onRefund && (
+                <button onClick={() => onRefund(p.id)}>Вернуть</button>
+              )}
+            </td>
           </tr>
         ))}
       </tbody>
