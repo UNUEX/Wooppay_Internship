@@ -1,4 +1,4 @@
-import { Payment, SessionUser, User } from "@/types";
+import { Payment, Role, SessionUser, User } from "@/types";
 
 // globalThis нужен, чтобы данные не сбрасывались при перезагрузке модулей в dev-режиме
 const g = globalThis as unknown as {
@@ -26,7 +26,7 @@ export function toSafeUser(user: User): SessionUser {
 }
 
 // админ видит все платежи, предприниматель только свои
-export function getPaymentsFor(userId: number, role: string): Payment[] {
+export function getPaymentsFor(userId: number, role: Role): Payment[] {
   if (role === "admin") return db.payments;
   return db.payments.filter((p) => p.userId === userId);
 }
