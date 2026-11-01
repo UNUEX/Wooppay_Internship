@@ -22,3 +22,9 @@ export type Payment = {
   createdAt: string;
   userId: number;
 };
+// данные из формы нового платежа
+export type PaymentFormData = {
+  customer: string;
+  description: string;
+  amount: number;
+};
