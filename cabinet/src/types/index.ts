@@ -28,3 +28,11 @@ export type PaymentFormData = {
   description: string;
   amount: number;
 };
+
+// данные из формы пользователя (создание и редактирование)
+export type UserFormData = {
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+};

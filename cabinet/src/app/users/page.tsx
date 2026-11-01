@@ -1,0 +1,54 @@
+"use client";
+import { useEffect, useState } from "react";
+import ProtectedPage from "@/components/ProtectedPage";
+import UserForm from "@/components/UserForm";
+import { SessionUser, UserFormData } from "@/types";
+import * as userService from "@/services/userService";
+
+export default function UsersPage() {
+  return (
+    <ProtectedPage role="admin">
+      <UsersContent />
+    </ProtectedPage>
+  );
+}
+
+function UsersContent() {
+  const [users, setUsers] = useState<SessionUser[]>([]);
+
+  useEffect(() => {
+    userService.getUsers().then(setUsers);
+  }, []);
+
+  async function handleCreate(data: UserFormData) {
+    const created = await userService.createUser(data);
+    setUsers([...users, created]);
+  }
+
+  return (
+    <div>
+      <h1>Пользователи</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роль</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <tr key={u.id}>
+              <td>{u.id}</td>
+              <td>{u.name}</td>
+              <td>{u.email}</td>
+              <td>{u.role === "admin" ? "Админ" : "Предприниматель"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <UserForm onSubmit={handleCreate} />
+    </div>
+  );
+}
