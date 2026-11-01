@@ -15,6 +15,7 @@ export default function UsersPage() {
 
 function UsersContent() {
   const [users, setUsers] = useState<SessionUser[]>([]);
+  const [editing, setEditing] = useState<SessionUser | null>(null);
 
   useEffect(() => {
     userService.getUsers().then(setUsers);
@@ -23,6 +24,13 @@ function UsersContent() {
   async function handleCreate(data: UserFormData) {
     const created = await userService.createUser(data);
     setUsers([...users, created]);
+  }
+
+  async function handleUpdate(data: UserFormData) {
+    if (!editing) return;
+    const updated = await userService.updateUser(editing.id, data);
+    setUsers(users.map((u) => (u.id === updated.id ? updated : u)));
+    setEditing(null);
   }
 
   return (
@@ -35,6 +43,7 @@ function UsersContent() {
             <th>Имя</th>
             <th>Email</th>
             <th>Роль</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -44,11 +53,21 @@ function UsersContent() {
               <td>{u.name}</td>
               <td>{u.email}</td>
               <td>{u.role === "admin" ? "Админ" : "Предприниматель"}</td>
+              <td><button onClick={() => setEditing(u)}>Изменить</button></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <UserForm onSubmit={handleCreate} />
+      {editing ? (
+        <UserForm
+          key={editing.id}
+          initial={editing}
+          onSubmit={handleUpdate}
+          onCancel={() => setEditing(null)}
+        />
+      ) : (
+        <UserForm onSubmit={handleCreate} />
+      )}
     </div>
   );
 }

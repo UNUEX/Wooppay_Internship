@@ -11,3 +11,10 @@ export function createUser(data: UserFormData) {
     body: JSON.stringify(data),
   });
 }
+
+export function updateUser(id: number, data: UserFormData) {
+  return request<SessionUser>(`/api/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
