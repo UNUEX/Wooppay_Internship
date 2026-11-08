@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { db, getPaymentsFor } from "@/mocks/db";
-import type { Payment } from "@/entities/payment";
+import { validatePayment, type Payment } from "@/entities/payment";
 import type { Role } from "@/entities/user";
+import { firstError, hasErrors } from "@/shared/lib";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,14 +15,16 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const body = await req.json();
 
-  if (!body.customer || !body.amount || body.amount <= 0) {
-    return NextResponse.json({ error: "Укажите клиента и сумму больше 0" }, { status: 400 });
+  // сервер проверяет данные сам: фронтенду доверять нельзя
+  const errors = validatePayment(body);
+  if (hasErrors(errors)) {
+    return NextResponse.json({ error: firstError(errors), errors }, { status: 400 });
   }
 
   const payment: Payment = {
     id: db.payments.length + 1,
-    customer: body.customer,
-    description: body.description,
+    customer: body.customer.trim(),
+    description: (body.description ?? "").trim(),
     amount: body.amount,
     status: "paid",
     createdAt: new Date().toISOString(),

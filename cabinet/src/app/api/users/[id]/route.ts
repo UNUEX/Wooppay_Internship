@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { db, toSafeUser } from "@/mocks/db";
+import { validateUser } from "@/entities/user";
+import { firstError, hasErrors } from "@/shared/lib";
 
 export async function PUT(
   req: Request,
@@ -13,13 +15,21 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const emailTaken = db.users.some((u) => u.email === body.email && u.id !== user.id);
+
+  // сервер проверяет данные сам: фронтенду доверять нельзя
+  const errors = validateUser(body, { isEdit: true });
+  if (hasErrors(errors)) {
+    return NextResponse.json({ error: firstError(errors), errors }, { status: 400 });
+  }
+
+  const email = body.email.trim();
+  const emailTaken = db.users.some((u) => u.email === email && u.id !== user.id);
   if (emailTaken) {
     return NextResponse.json({ error: "Такой email уже есть" }, { status: 400 });
   }
 
-  user.name = body.name;
-  user.email = body.email;
+  user.name = body.name.trim();
+  user.email = email;
   user.role = body.role;
   if (body.password) user.password = body.password; // пустой пароль = не меняем
 
