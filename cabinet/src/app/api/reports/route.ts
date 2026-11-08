@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getPaymentsFor } from "@/mocks/db";
-import { Payment, Report, Role } from "@/types";
+import type { Payment } from "@/entities/payment";
+import type { Report } from "@/entities/report";
+import type { Role } from "@/entities/user";
 
 function sum(items: Payment[]) {
   return items.reduce((total, p) => total + p.amount, 0);

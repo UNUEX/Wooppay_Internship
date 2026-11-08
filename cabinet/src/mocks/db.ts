@@ -1,4 +1,5 @@
-import { Payment, Role, SessionUser, User } from "@/types";
+import type { Payment } from "@/entities/payment";
+import type { Role, SessionUser, User } from "@/entities/user";
 
 // globalThis нужен, чтобы данные не сбрасывались при перезагрузке модулей в dev-режиме
 const g = globalThis as unknown as {

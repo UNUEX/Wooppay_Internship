@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db, toSafeUser } from "@/mocks/db";
-import { User } from "@/types";
+import type { User } from "@/entities/user";
 
 export async function GET() {
   return NextResponse.json(db.users.map(toSafeUser));

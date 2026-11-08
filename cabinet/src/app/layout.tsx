@@ -1,6 +1,6 @@
-import Header from "@/components/Header";
 import "./globals.css";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/features/auth";
+import { Header } from "@/widgets/header";
 
 export const metadata = { title: "Кабинет предпринимателя" };
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db, getPaymentsFor } from "@/mocks/db";
-import { Payment, Role } from "@/types";
+import type { Payment } from "@/entities/payment";
+import type { Role } from "@/entities/user";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
