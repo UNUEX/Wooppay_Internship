@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Payment, getPayments } from "@/entities/payment";
+import { useCallback } from "react";
+import { getPayments } from "@/entities/payment";
 import { ProtectedPage, useAuth } from "@/features/auth";
+import { usePolling } from "@/shared/hooks";
 import { PaymentsTable } from "@/widgets/payments-table";
 
 export function PaymentsPage() {
@@ -14,20 +15,15 @@ export function PaymentsPage() {
 
 function PaymentsContent() {
   const { user } = useAuth();
-  const [payments, setPayments] = useState<Payment[]>([]);
-
-  useEffect(() => {
-    if (user) getPayments(user).then(setPayments);
-  }, [user]);
-
-  function handlePaymentChange(updated: Payment) {
-    setPayments((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-  }
+  // Статусы меняются по вебхукам от шлюза (клиент оплатил, возврат прошёл),
+  // поэтому список перечитываем раз в 3 секунды.
+  const load = useCallback(() => (user ? getPayments(user) : Promise.resolve([])), [user]);
+  const { data: payments, refresh } = usePolling(load, 3000);
 
   return (
     <div>
       <h1>Платежи</h1>
-      <PaymentsTable payments={payments} onPaymentChange={handlePaymentChange} />
+      {payments ? <PaymentsTable payments={payments} onPaymentChange={refresh} /> : <p>Загрузка...</p>}
     </div>
   );
 }

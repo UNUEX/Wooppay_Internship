@@ -1,6 +1,12 @@
 import { request } from "@/shared/api";
-import { Payment } from "@/entities/payment";
 
-export function refundPayment(id: number) {
-  return request<Payment>(`/api/payments/${id}/refund`, { method: "POST" });
+// Возврат идёт через сервер кабинета: только у него есть секретный ключ шлюза.
+// Ответ — только подтверждение, что шлюз принял возврат. Статус платежа
+// обновится позже, когда придёт вебхук refund.succeeded.
+export function refundPayment(id: number, amount: number, idempotencyKey: string) {
+  return request<{ refund: { id: string } }>(`/api/payments/${id}/refund`, {
+    method: "POST",
+    body: JSON.stringify({ amount }),
+    idempotencyKey,
+  });
 }

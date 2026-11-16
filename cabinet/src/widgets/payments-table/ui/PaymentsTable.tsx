@@ -1,9 +1,10 @@
-import { Payment } from "@/entities/payment";
+import { METHOD_LABELS, Payment, PayLink, PaymentStatusBadge, isAwaitingPayment, refundableAmount } from "@/entities/payment";
 import { RefundButton } from "@/features/refund-payment";
+import { formatMoney } from "@/shared/lib";
 
 type Props = {
   payments: Payment[];
-  onPaymentChange: (updated: Payment) => void;
+  onPaymentChange: () => void;
 };
 
 // виджет = таблица (данные сущности payment) + действие "вернуть" (фича refund-payment)
@@ -17,6 +18,7 @@ export function PaymentsTable({ payments, onPaymentChange }: Props) {
           <th>Описание</th>
           <th>Сумма</th>
           <th>Статус</th>
+          <th>Оплата</th>
           <th>Дата</th>
           <th></th>
         </tr>
@@ -27,13 +29,21 @@ export function PaymentsTable({ payments, onPaymentChange }: Props) {
             <td>{p.id}</td>
             <td>{p.customer}</td>
             <td>{p.description}</td>
-            <td>{p.amount} ₸</td>
-            <td>{p.status === "paid" ? "Оплачен" : "Возвращён"}</td>
+            <td>
+              {formatMoney(p.amount)}
+              {p.refundedAmount > 0 && <div className="muted">возвращено {formatMoney(p.refundedAmount)}</div>}
+            </td>
+            <td>
+              <PaymentStatusBadge status={p.status} />
+              {p.status === "failed" && <div className="muted">клиент может повторить</div>}
+            </td>
+            <td>
+              {p.method ? `${METHOD_LABELS[p.method]}${p.cardLast4 ? ` •••• ${p.cardLast4}` : ""}` : "—"}
+            </td>
             <td>{new Date(p.createdAt).toLocaleDateString("ru-RU")}</td>
             <td>
-              {p.status === "paid" && (
-                <RefundButton paymentId={p.id} onRefunded={onPaymentChange} />
-              )}
+              {isAwaitingPayment(p) && <PayLink payUrl={p.payUrl} />}
+              {refundableAmount(p) > 0 && <RefundButton payment={p} onRefunded={onPaymentChange} />}
             </td>
           </tr>
         ))}

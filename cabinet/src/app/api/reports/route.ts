@@ -4,8 +4,9 @@ import type { Payment } from "@/entities/payment";
 import type { Report } from "@/entities/report";
 import type { Role } from "@/entities/user";
 
-function sum(items: Payment[]) {
-  return items.reduce((total, p) => total + p.amount, 0);
+function sum(items: Payment[], pick: (p: Payment) => number) {
+  // считаем в тиынах, чтобы не копить ошибку дробей
+  return items.reduce((total, p) => total + Math.round(pick(p) * 100), 0) / 100;
 }
 
 export async function GET(req: Request) {
@@ -15,15 +16,16 @@ export async function GET(req: Request) {
 
   // отчёт считается по тем же платежам, которые пользователь видит в списке
   const list = getPaymentsFor(userId, role);
-  const paid = list.filter((p) => p.status === "paid");
-  const refunded = list.filter((p) => p.status === "refunded");
+  // "оплачен" — всё, по чему деньги хоть раз поступили (в т.ч. потом возвращённые)
+  const paid = list.filter((p) => p.status === "paid" || p.status === "partially_refunded" || p.status === "refunded");
+  const refunded = list.filter((p) => p.refundedAmount > 0);
 
   const report: Report = {
     totalCount: list.length,
     paidCount: paid.length,
     refundedCount: refunded.length,
-    paidSum: sum(paid),
-    refundedSum: sum(refunded),
+    paidSum: sum(paid, (p) => p.amount),
+    refundedSum: sum(refunded, (p) => p.refundedAmount),
   };
   return NextResponse.json(report);
 }

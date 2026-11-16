@@ -1,9 +1,82 @@
 body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
 main { max-width: 900px; margin: 20px auto; padding: 0 16px; }
-header { background: #222; color: white; padding: 12px 16px; display: flex; gap: 16px; align-items: center; }
+header { background: #222; color: white; padding: 12px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 header a { color: white; }
 table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 20px; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
 input, select { display: block; margin-bottom: 10px; padding: 6px; width: 260px; }
 button { padding: 6px 12px; cursor: pointer; }
 .error { color: red; }
+.muted { color: #777; font-size: 13px; }
+pre { background: #fff; border: 1px solid #ddd; padding: 8px; font-size: 12px; overflow: auto; }
+
+/* --- статусы платежей --- */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #eee; white-space: nowrap; }
+.badge-paid { background: #e3f4e6; color: #1b7a34; }
+.badge-pending { background: #fff3e0; color: #a35b00; }
+.badge-failed, .badge-expired { background: #fde8e8; color: #b42318; }
+.badge-refunded, .badge-partially_refunded { background: #eee8f7; color: #5b35a8; }
+.pay-link { display: inline-flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.inline-form { display: flex; gap: 4px; flex-wrap: wrap; }
+.inline-form input { width: 90px; margin: 0; }
+
+/* --- страница оплаты для клиента --- */
+.checkout { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
+@media (max-width: 640px) { .checkout { grid-template-columns: 1fr; } }
+.summary { background: #222; color: white; padding: 16px; border-radius: 8px; }
+.summary .muted { color: #bbb; }
+.summary-amount { font-size: 26px; font-weight: bold; margin-top: 8px; }
+.panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.narrow { max-width: 480px; margin: 0 auto; }
+
+.method-picker { border: 0; padding: 0; margin: 0 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 480px) { .method-picker { grid-template-columns: 1fr; } }
+.method { display: flex; gap: 8px; align-items: center; border: 1px solid #ddd; border-radius: 6px; padding: 8px; cursor: pointer; }
+.method.selected { border-color: #1f6feb; box-shadow: 0 0 0 1px #1f6feb; }
+.method input { width: auto; margin: 0; }
+.method small { display: block; color: #777; }
+
+.card-form label, .external-page label { display: block; font-size: 13px; color: #555; }
+.card-form input, .external-page input { width: 100%; box-sizing: border-box; font-size: 16px; padding: 10px; margin-top: 4px; }
+.card-form input[aria-invalid="true"] { border: 1px solid red; }
+.card-form .row { display: flex; gap: 12px; }
+.card-form .row > div { flex: 1; }
+.brand { float: right; color: #555; }
+/* CVV скрыт точками без type="password" */
+.masked { -webkit-text-security: disc; }
+
+.pay-button { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 12px; font-size: 16px; background: #1f6feb; color: white; border: 0; border-radius: 6px; text-decoration: none; margin: 8px 0; }
+.pay-button:disabled { opacity: 0.6; }
+.pay-button.dark { background: black; }
+.method-body { display: flex; flex-direction: column; gap: 8px; }
+
+.sandbox-hint { background: #fff8e1; border: 1px dashed #e0b84d; padding: 8px 12px; border-radius: 6px; }
+.sandbox-hint table { font-size: 13px; margin: 0; }
+
+/* --- "чужие" страницы: банк (3DS) и кошелёк --- */
+.external-page { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; border-top: 6px solid #0b5394; }
+.external-page.wallet { border-top-color: #7b1fa2; }
+.external-brand { font-weight: bold; color: #0b5394; }
+.wallet .external-brand { color: #7b1fa2; }
+
+.result { text-align: center; }
+.result table { text-align: left; margin-top: 16px; }
+.result-icon { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto; color: white; font-size: 26px; line-height: 48px; }
+.result-icon.success { background: #1b7a34; }
+.result-icon.fail { background: #b42318; }
+
+/* --- эмуляция окон Google Pay / Apple Pay --- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.modal { background: white; border-radius: 12px; padding: 16px; width: 100%; max-width: 380px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.sheet-option { display: block; width: 100%; text-align: left; margin-bottom: 8px; background: white; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
+.sheet-option span { display: block; }
+
+/* --- журнал вебхуков --- */
+.toggle { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+.toggle input { width: auto; margin: 0; }
+.webhook { background: white; border: 1px solid #ddd; border-left: 4px solid #999; padding: 8px 12px; margin-bottom: 8px; font-size: 14px; }
+.webhook-delivered { border-left-color: #1b7a34; }
+.webhook-pending { border-left-color: #a35b00; }
+.webhook-failed { border-left-color: #b42318; }
+.webhook ol { margin: 4px 0 0; }

@@ -21,6 +21,7 @@ export function Header() {
       <Link href="/payments/new">Новый платёж</Link>
       <Link href="/reports">Отчёты</Link>
       {user.role === "admin" && <Link href="/users">Пользователи</Link>}
+      {user.role === "admin" && <Link href="/webhooks">Вебхуки</Link>}
       <span style={{ marginLeft: "auto" }}>{user.name}</span>
       <button onClick={handleLogout}>Выйти</button>
     </header>
